@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPI Payment Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4a00e0, #8e2de2); /* Gradient similar to PhonePe */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        header h2 {
+            text-align: center;
+            color: #4a00e0;
+        }
+
+        .account {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .upi-logo {
+            display: block;
+            margin: 0 auto;
+            width: 80px;
+            height: 80px;
+        }
+
+        .details p {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .upi-pin {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .upi-pin h3 {
+            font-size: 1.6rem;
+            color: #4CAF50;
+        }
+
+        .pin-input {
+            font-size: 1.5rem;
+            letter-spacing: 1rem;
+            text-align: center;
+            color: #333;
+            width: 80%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 10px auto;
+            background-color: #f9f9f9;
+            user-select: none;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .keypad button {
+            padding: 15px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s ease;
+        }
+
+        .keypad button.num-btn {
+            background-color: #4a90e2;
+        }
+
+        .keypad button.num-btn:hover {
+            background-color: #357ab8;
+        }
+
+        .keypad button.check {
+            background-color: #4CAF50;
+        }
+
+        .keypad button.check:hover {
+            background-color: #388e3c;
+        }
+
+        .keypad button.cancel {
+            background-color: #f44336;
+        }
+
+        .keypad button.cancel:hover {
+            background-color: #d32f2f;
+        }
+
+        .keypad button:active {
+            transform: scale(0.95);
+        }
+
+        .keypad button:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+
+        .alert p {
+            color: #ffeb3b;
+            background-color: #212121;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+        }
+        .backbtn {
+            font-size: 20px;
+            margin:10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+ <div align="center">  
+    <div class="container">
+        <header>
+            <h2>State Bank Of India</h2>
+            <p class="account">XXXX7329</p>
+            <img src="upi.png" alt="UPI Logo" class="upi-logo">
+        </header>
+        
+        <section class="details">
+            <p><strong>Sending:</strong> $<span id="amount"></span></p>
+        </section>
+        
+        <section class="upi-pin">
+            <h3>ENTER 6-DIGIT UPI PIN</h3>
+            <div class="pin-input" id="upi-pin">_ _ _ _ _ _</div>
+        </section>
+        
+        <section class="alert">
+            <p>Transferring money from your State Bank Of India account.</p>
+        </section>
+        
+        <section class="keypad">
+            <button class="num-btn">1</button>
+            <button class="num-btn">2</button>
+            <button class="num-btn">3</button>
+            <button class="num-btn">4</button>
+            <button class="num-btn">5</button>
+            <button class="num-btn">6</button>
+            <button class="num-btn">7</button>
+            <button class="num-btn">8</button>
+            <button class="num-btn">9</button>
+            <button class="num-btn">0</button>
+            <button class="check" disabled target="_blank">OK</button>
+            <button class="cancel">Cancel</button>
+        </section>
+    </div>
+    <button class="backbtn" onclick="window.history.back()" > Go Back </button>
+</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the amount from URL query parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const amount = urlParams.get('amount');
+
+            // Set the value in the HTML element
+            document.getElementById('amount').textContent = amount;
+
+            const pinInput = document.getElementById('upi-pin');
+            const numButtons = document.querySelectorAll('.num-btn');
+            const checkButton = document.querySelector('.check');
+            const cancelButton = document.querySelector('.cancel');
+
+            let pin = [];
+            const maxLength = 6;
+
+            numButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    if (pin.length < maxLength) {
+                        pin.push(this.textContent);
+                        pinInput.textContent = pin.join(' ') + ' _'.repeat(maxLength - pin.length);
+                    }
+                    checkButton.disabled = pin.length !== maxLength;
+                });
+            });
+
+            checkButton.addEventListener('click', function () {
+                if (pin.length === maxLength) {
+                    // Redirect to successful.html after PIN validation
+                    window.location.href = "successful.html";
+                }
+            });
+
+            cancelButton.addEventListener('click', function () {
+                pin = [];
+                pinInput.textContent = '_ _ _ _ _ _';
+                checkButton.disabled = true;
+            });
+        });
+    </script>
+    
+</body>
+</html>
